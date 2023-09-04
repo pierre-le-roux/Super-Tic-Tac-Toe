@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Tic Tac Toe</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Super Tic Tac Toe</h1>
+    </header>
+
+    <section class="game-board">
+        {% for i in range(3) %}
+            <div class="main-row">
+                {% for j in range(3) %}
+                <div class="main-cell" data-main-row="{{ i }}" data-main-col="{{ j }}">
+                        {% for x in range(3) %}
+                            <div class="mini-row">
+                                {% for y in range(3) %}
+                                    <button class="mini-cell" data-main-row="{{ i }}" data-main-col="{{ j }}" data-mini-row="{{ x }}" data-mini-col="{{ y }}"></button>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </section>
+
+    <footer>
+        <p id="status-bar">Player X's turn</p>
+        <button id="restart-btn">Restart Game</button>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

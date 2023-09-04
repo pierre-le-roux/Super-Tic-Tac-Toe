@@ -1,0 +1,90 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+}
+
+header {
+    margin-bottom: 50px;
+}
+
+.game-board {
+    display: flex;
+    flex-wrap: wrap;
+    width: 630px;
+    margin: 0 auto;
+}
+
+.main-row {
+    display: flex;
+    width: 100%;
+}
+
+.main-cell {
+    border: 3px solid black;
+    width: 33.33%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.mini-row {
+    display: flex;
+    width: 100%;
+}
+
+.mini-cell {
+    border: 1px solid gray;
+    width: 33.33%;
+    height: 60px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+footer {
+    margin-top: 50px;
+}
+
+#restart-btn {
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+/* Highlighting the next possible move */
+.main-cell.next-move {
+    border: 3px solid yellow;
+}
+
+/* Highlighting the winning combination */
+.main-cell.winner {
+    border: 3px solid green;
+}
+
+.main-cell.x::before,
+.main-cell.o::before {
+    content: attr(class);  // This uses the class name as content, either 'x' or 'o'
+    font-size: 100px;  // Adjust size as necessary
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;  // To ensure it's above other elements
+}
+
+.winner-tile {
+    font-size: 5em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.winner-tile.x,
+.winner-tile.o {
+    font-size: 100px;  // Adjust size as necessary
+    color: blue;  // Default color for X
+}
+
+.winner-tile.o {
+    color: red;  // Color for O
+}
