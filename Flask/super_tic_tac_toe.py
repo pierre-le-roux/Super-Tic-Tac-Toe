@@ -1,5 +1,6 @@
 from utility import get_next_board, check_mini_win, check_main_win, check_mini_draw
 
+
 class SuperTicTacToe:
     def __init__(self):
         self.game_over = False
@@ -34,7 +35,7 @@ class SuperTicTacToe:
                 for x in range(3):
                     for y in range(3):
                         self.board[i][j][x][y] = winner
-                
+
                 # Check if main game is won
                 winner, self.winning_combination = check_main_win(self.main_board_state)
                 if winner:
@@ -64,7 +65,6 @@ class SuperTicTacToe:
             "mainBoardState": self.main_board_state,
         }
 
-
     def is_valid_move(self, board, main_board_state, last_move, current_move):
         """
         Check if the given move is valid.
@@ -80,7 +80,7 @@ class SuperTicTacToe:
         """
         print(f"Last move: {last_move}")  # Log the last move
         print(f"Current move: {current_move}")  # Log the current move
-        
+
         next_board = get_next_board(last_move, main_board_state)
         print(f"Next board: {next_board}")  # Log the next board
 
@@ -97,16 +97,17 @@ class SuperTicTacToe:
         else:
             main_row, main_col, mini_row, mini_col = current_move
             # Check if the player is playing in the correct mini board and the chosen cell is empty.
-            if (main_row, main_col) == next_board and board[main_row][main_col][mini_row][mini_col] == "":
+            if (main_row, main_col) == next_board and board[main_row][main_col][
+                mini_row
+            ][mini_col] == "":
                 return True
             else:
                 return False
 
-
     def get_game_state(self):
         next_board = get_next_board(self.last_move, self.main_board_state)
         return next_board, self.winning_combination
-    
+
     def reset_game(self):
         self.game_over = False
         self.board = [
@@ -118,4 +119,3 @@ class SuperTicTacToe:
         self.last_move = None
         self.winner = None
         self.winning_combination = []
-

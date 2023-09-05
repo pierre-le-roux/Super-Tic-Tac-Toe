@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         parent.removeChild(tile);
                         for (let i = 0; i < 3; i++) {
                             for (let j = 0; j < 3; j++) {
-                                const miniCell = document.createElement('div');
+                                const miniCell = document.createElement('button');
                                 miniCell.classList.add('mini-cell');
                                 miniCell.setAttribute('data-mini-row', i);
                                 miniCell.setAttribute('data-mini-col', j);
