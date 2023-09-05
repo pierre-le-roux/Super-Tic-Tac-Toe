@@ -20,17 +20,30 @@ document.addEventListener("DOMContentLoaded", function () {
                         cell.textContent = "";
                     });
                     statusBar.textContent = "Player X's turn";
-
+    
                     // Remove any highlights
                     const highlighted = document.querySelectorAll('.main-cell.next-move, .main-cell.winner');
                     highlighted.forEach(cell => {
                         cell.classList.remove('next-move', 'winner');
+                        while (cell.firstChild) {
+                            cell.removeChild(cell.firstChild); // Clear inner elements
+                        }
+                        // Rebuild the mini-game grid inside the main cell
+                        for (let i = 0; i < 3; i++) {
+                            for (let j = 0; j < 3; j++) {
+                                const miniCell = document.createElement('div');
+                                miniCell.classList.add('mini-cell');
+                                miniCell.setAttribute('data-mini-row', i.toString());
+                                miniCell.setAttribute('data-mini-col', j.toString());
+                                miniCell.addEventListener('click', handleMove);
+                                cell.appendChild(miniCell);
+                            }
+                        }
                     });
                 }
             });
     });
-
-
+    
 
     function updateMiniGameWinner(mainRow, mainCol, winner) {
         const mainCell = document.querySelector(`.main-cell[data-main-row="${mainRow}"][data-main-col="${mainCol}"]`);
@@ -44,6 +57,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleMove(event) {
         const cell = event.target;
+        const mainCell = cell.closest('.main-cell');
+    
+        // Check if the mini-game has already been won
+        if (mainCell.querySelector('.winner-tile')) {
+            alert("This mini-game has already been won. Choose another cell.");
+            return;
+        }
+        
         const moveData = {
             mainRow: cell.dataset.mainRow,
             mainCol: cell.dataset.mainCol,

@@ -14,7 +14,12 @@ def get_next_board(last_move, main_board_state):
     if last_move is None:
         return None
 
+    # Get the previous move indicating the next mini-game location
     _, _, mini_row, mini_col = last_move
+    
+    print("main board state:", main_board_state)
+    print(f"last move: {last_move}")
+    print(f"main board state: {main_board_state[mini_row][mini_col] == ''}\n")
 
     # If the determined mini board is already won, return None, indicating player can choose any board.
     if main_board_state[mini_row][mini_col] != "":
@@ -60,6 +65,24 @@ def check_mini_win(mini_board):
         return mini_board[0][2]
 
     return ""
+
+
+def check_mini_draw(mini_board):
+    """
+    Check if the mini tic-tac-toe game has resulted in a draw.
+
+    Args:
+    - mini_board (list): A 3x3 matrix representing the mini tic-tac-toe board.
+
+    Returns:
+    - bool: True if the game is a draw, False otherwise.
+    """
+
+    # Check if all positions are occupied
+    all_occupied = all(cell != "" for row in mini_board for cell in row)
+
+    return all_occupied and not check_mini_win(mini_board)
+
 
 
 def check_main_win(main_board_state):
