@@ -54,7 +54,6 @@ def make_move_endpoint():
         return jsonify({"error": "Invalid move"}), 400
 
 
-
 @app.route("/restart", methods=["POST"])
 def restart_game_endpoint():
     game.reset_game()

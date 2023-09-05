@@ -127,26 +127,32 @@ document.addEventListener("DOMContentLoaded", function () {
         highlighted.forEach(cell => {
             cell.classList.remove('next-move');
         });
-
+    
         // If nextMove is not provided or contains null values, highlight all available spaces
         if (!nextMove || (nextMove[0] === null && nextMove[1] === null)) {
             // Highlight available mini-games
             const availableCells = document.querySelectorAll('.main-cell:not(.winner-tile):not(.x):not(.o)');
             availableCells.forEach(cell => {
-                cell.classList.add('next-move');
+                if (!cell.querySelector('.winner-tile')) {
+                    cell.classList.add('next-move');
+                }
             });
             return;
         }
-
-
+    
         // Else, highlight the specific next move
         const mainRow = nextMove[0];
         const mainCol = nextMove[1];
         const mainCell = document.querySelector(`.main-cell[data-main-row="${mainRow}"][data-main-col="${mainCol}"]`);
+        
+        // Check if the main cell already has a winner tile before highlighting
+        if (mainCell.querySelector('.winner-tile')) {
+            return;
+        }
+        
         mainCell.classList.add('next-move');
     }
-
-
+    
 
     function highlightWinningCombination(winningCombination) {
         // Remove the previous winner highlights
