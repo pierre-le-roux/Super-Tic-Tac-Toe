@@ -12,33 +12,41 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch('/restart', {
             method: 'POST'
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.message) {
-                // Remove any highlights and winner-tiles
-                const mainCells = document.querySelectorAll('.main-cell');
-                mainCells.forEach(mainCell => {
-                    mainCell.classList.remove('next-move', 'winner');
-                    
-                    // Clear the mainCell
-                    mainCell.innerHTML = "";
-                    
-                    // Recreate the 3x3 mini-game structure
-                    for (let i = 0; i < 3; i++) {
-                        for (let j = 0; j < 3; j++) {
-                            const miniCell = document.createElement('div');
-                            miniCell.classList.add('mini-cell');
-                            miniCell.setAttribute('data-mini-row', i);
-                            miniCell.setAttribute('data-mini-col', j);
-                            miniCell.addEventListener('click', handleMove);  // Reattach the click event listener
-                            mainCell.appendChild(miniCell);
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    // Clear all cells and reset the status bar
+                    cells.forEach(cell => {
+                        cell.textContent = "";
+                    });
+                    statusBar.textContent = "Player X's turn";
+    
+                    // Remove any highlights
+                    const highlighted = document.querySelectorAll('.main-cell.next-move, .main-cell.winner');
+                    highlighted.forEach(cell => {
+                        cell.classList.remove('next-move', 'winner');
+                    });
+    
+                    // Revert mini-games that were replaced by winner tiles
+                    const winnerTiles = document.querySelectorAll('.winner-tile');
+                    winnerTiles.forEach(tile => {
+                        const parent = tile.parentElement;
+                        parent.removeChild(tile);
+                        for (let i = 0; i < 3; i++) {
+                            for (let j = 0; j < 3; j++) {
+                                const miniCell = document.createElement('div');
+                                miniCell.classList.add('mini-cell');
+                                miniCell.setAttribute('data-mini-row', i);
+                                miniCell.setAttribute('data-mini-col', j);
+                                miniCell.setAttribute('data-main-row', parent.getAttribute('data-main-row'));
+                                miniCell.setAttribute('data-main-col', parent.getAttribute('data-main-col'));
+                                miniCell.addEventListener('click', handleMove);
+                                parent.appendChild(miniCell);
+                            }
                         }
-                    }
-                });
-                
-                statusBar.textContent = "Player X's turn";
-            }
-        });
+                    });
+                }
+            });
     });
 
 
