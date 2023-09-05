@@ -1,5 +1,6 @@
 from utility import get_next_board, check_mini_win, check_main_win
 
+
 class SuperTicTacToe:
     def __init__(self):
         self.game_over = False
@@ -18,7 +19,21 @@ class SuperTicTacToe:
             self.board[i][j][x][y] = self.current_player
 
             # Check if mini game is won
+            # Check if mini game is a draw
+            if check_mini_draw(self.board[i][j]) and not winner:
+                # Reset the mini-game board
+                for x in range(3):
+                    for y in range(3):
+                        self.board[i][j][x][y] = ""
+
             winner = check_mini_win(self.board[i][j])
+        mini_game_won = False
+        mini_game_winner = None
+        mini_game_position = None
+        if winner:
+            mini_game_won = True
+            mini_game_winner = winner
+            mini_game_position = (i, j)
             if winner:
                 self.main_board_state[i][j] = winner
                 # Set all cells of the mini-game to the winner
@@ -39,8 +54,12 @@ class SuperTicTacToe:
             self.last_move = move
             # Switch to the next player
             self.current_player = "O" if self.current_player == "X" else "X"
-            
-            return True
+
+            return {
+                "mini_game_won": mini_game_won,
+                "mini_game_winner": mini_game_winner,
+                "mini_game_position": mini_game_position,
+            }
         else:
             return False
 
@@ -64,7 +83,11 @@ class SuperTicTacToe:
             main_row, main_col, mini_row, mini_col = current_move
             # Check if the chosen cell within the mini board is empty.
             if board[main_row][main_col][mini_row][mini_col] == "":
-                return True
+                return {
+                    "mini_game_won": mini_game_won,
+                    "mini_game_winner": mini_game_winner,
+                    "mini_game_position": mini_game_position,
+                }
             else:
                 return False
         else:
@@ -73,10 +96,14 @@ class SuperTicTacToe:
             if (main_row, main_col) == next_board and board[main_row][main_col][
                 mini_row
             ][mini_col] == "":
-                return True
+                return {
+                    "mini_game_won": mini_game_won,
+                    "mini_game_winner": mini_game_winner,
+                    "mini_game_position": mini_game_position,
+                }
             else:
                 return False
-            
+
     def get_game_state(self):
         next_board = get_next_board(self.last_move, self.main_board_state)
         return next_board, self.winning_combination
