@@ -58,9 +58,11 @@ document.addEventListener("DOMContentLoaded", function () {
     function handleMove(event) {
         const cell = event.target;
         const mainCell = cell.closest('.main-cell');
+
+        const isInitialMove = document.querySelectorAll('.main-cell.next-move').length === 0;
     
         // Check if the clicked cell is within the highlighted (valid) mini-game
-        if (!mainCell.classList.contains('next-move')) {
+        if (!isInitialMove && !mainCell.classList.contains('next-move')) {
             return; // If not, exit the function early
         }
     
