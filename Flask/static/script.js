@@ -57,14 +57,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleMove(event) {
         const cell = event.target;
-        const mainCell = cell.closest('.main-cell');
+        const mainCell = cell.closest('.main-cell');  // Get the parent mini-game board
     
-        // Check if the mini-game has already been won
-        if (mainCell.querySelector('.winner-tile')) {
-            alert("This mini-game has already been won. Choose another cell.");
-            return;
+        // Check if the clicked cell is within the valid move area
+        if (!cell.classList.contains('next-move')) {
+            return;  // If not, exit the function immediately
         }
-        
+    
         const moveData = {
             mainRow: cell.dataset.mainRow,
             mainCol: cell.dataset.mainCol,
