@@ -58,20 +58,21 @@ document.addEventListener("DOMContentLoaded", function () {
     function handleMove(event) {
         const cell = event.target;
         const mainCell = cell.closest('.main-cell');
+
+        const isInitialMove = document.querySelectorAll('.main-cell.next-move').length === 0;
     
-        // Check if the mini-game has already been won
-        if (mainCell.querySelector('.winner-tile')) {
-            alert("This mini-game has already been won. Choose another cell.");
-            return;
+        // Check if the clicked cell is within the highlighted (valid) mini-game
+        if (!isInitialMove && !mainCell.classList.contains('next-move')) {
+            return; // If not, exit the function early
         }
-        
+    
         const moveData = {
             mainRow: cell.dataset.mainRow,
             mainCol: cell.dataset.mainCol,
             miniRow: cell.dataset.miniRow,
             miniCol: cell.dataset.miniCol
         };
-
+    
         fetch('/move', {
             method: 'POST',
             headers: {
@@ -89,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (data.miniGameWon) {
                         updateMiniGameWinner(data.miniGamePosition[0], data.miniGamePosition[1], data.miniGameWinner);
                     }
-
+    
                     if (data.gameOver) {
                         statusBar.textContent = `Player ${data.winner} has won!`;
                         highlightWinningCombination(data.winningCombination);
@@ -104,6 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
     }
+    
 
     function updateMiniGameWinner(mainRow, mainCol, winner) {
         const mainCell = document.querySelector(`.main-cell[data-main-row="${mainRow}"][data-main-col="${mainCol}"]`);
