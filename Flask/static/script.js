@@ -57,11 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleMove(event) {
         const cell = event.target;
-        const mainCell = cell.closest('.main-cell');  // Get the parent mini-game board
+        const mainCell = cell.closest('.main-cell');
     
-        // Check if the clicked cell is within the valid move area
-        if (!cell.classList.contains('next-move')) {
-            return;  // If not, exit the function immediately
+        // Check if the clicked cell is within the highlighted (valid) mini-game
+        if (!mainCell.classList.contains('next-move')) {
+            return; // If not, exit the function early
         }
     
         const moveData = {
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
             miniRow: cell.dataset.miniRow,
             miniCol: cell.dataset.miniCol
         };
-
+    
         fetch('/move', {
             method: 'POST',
             headers: {
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (data.miniGameWon) {
                         updateMiniGameWinner(data.miniGamePosition[0], data.miniGamePosition[1], data.miniGameWinner);
                     }
-
+    
                     if (data.gameOver) {
                         statusBar.textContent = `Player ${data.winner} has won!`;
                         highlightWinningCombination(data.winningCombination);
@@ -103,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
     }
+    
 
     function updateMiniGameWinner(mainRow, mainCol, winner) {
         const mainCell = document.querySelector(`.main-cell[data-main-row="${mainRow}"][data-main-col="${mainCol}"]`);
