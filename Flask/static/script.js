@@ -12,38 +12,35 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch('/restart', {
             method: 'POST'
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    // Clear all cells and reset the status bar
-                    cells.forEach(cell => {
-                        cell.textContent = "";
-                    });
-                    statusBar.textContent = "Player X's turn";
-    
-                    // Remove any highlights
-                    const highlighted = document.querySelectorAll('.main-cell.next-move, .main-cell.winner');
-                    highlighted.forEach(cell => {
-                        cell.classList.remove('next-move', 'winner');
-                        while (cell.firstChild) {
-                            cell.removeChild(cell.firstChild); // Clear inner elements
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                // Remove any highlights and winner-tiles
+                const mainCells = document.querySelectorAll('.main-cell');
+                mainCells.forEach(mainCell => {
+                    mainCell.classList.remove('next-move', 'winner');
+                    
+                    // Clear the mainCell
+                    mainCell.innerHTML = "";
+                    
+                    // Recreate the 3x3 mini-game structure
+                    for (let i = 0; i < 3; i++) {
+                        for (let j = 0; j < 3; j++) {
+                            const miniCell = document.createElement('div');
+                            miniCell.classList.add('mini-cell');
+                            miniCell.setAttribute('data-mini-row', i);
+                            miniCell.setAttribute('data-mini-col', j);
+                            miniCell.addEventListener('click', handleMove);  // Reattach the click event listener
+                            mainCell.appendChild(miniCell);
                         }
-                        // Rebuild the mini-game grid inside the main cell
-                        for (let i = 0; i < 3; i++) {
-                            for (let j = 0; j < 3; j++) {
-                                const miniCell = document.createElement('div');
-                                miniCell.classList.add('mini-cell');
-                                miniCell.setAttribute('data-mini-row', i.toString());
-                                miniCell.setAttribute('data-mini-col', j.toString());
-                                miniCell.addEventListener('click', handleMove);
-                                cell.appendChild(miniCell);
-                            }
-                        }
-                    });
-                }
-            });
+                    }
+                });
+                
+                statusBar.textContent = "Player X's turn";
+            }
+        });
     });
-    
+
 
     function updateMiniGameWinner(mainRow, mainCol, winner) {
         const mainCell = document.querySelector(`.main-cell[data-main-row="${mainRow}"][data-main-col="${mainCol}"]`);
