@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const cells = document.querySelectorAll('.mini-cell');
     const statusBar = document.getElementById('status-bar');
     const restartBtn = document.getElementById('restart-btn');
+    let gameOver = false;
 
     cells.forEach(cell => {
         cell.addEventListener('click', handleMove);
@@ -12,59 +13,79 @@ document.addEventListener("DOMContentLoaded", function () {
         fetch('/restart', {
             method: 'POST'
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    // Clear all cells and reset the status bar
-                    cells.forEach(cell => {
-                        cell.textContent = "";
-                    });
-                    statusBar.textContent = "Player X's turn";
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                gameOver = false;  // Reset the gameOver state
+                
+                // Clear all cells and reset the status bar
+                cells.forEach(cell => {
+                    cell.textContent = "";
+                });
+                statusBar.textContent = "Player X's turn";
     
-                    // Remove any highlights
-                    const highlighted = document.querySelectorAll('.main-cell.next-move, .main-cell.winner');
-                    highlighted.forEach(cell => {
-                        cell.classList.remove('next-move', 'winner');
-                    });
-    
-                    // Revert mini-games that were replaced by winner tiles
-                    const winnerTiles = document.querySelectorAll('.winner-tile');
-                    winnerTiles.forEach(tile => {
-                        const parent = tile.parentElement;
-                        parent.removeChild(tile);
-                        for (let i = 0; i < 3; i++) {
-                            for (let j = 0; j < 3; j++) {
-                                const miniCell = document.createElement('button');
-                                miniCell.classList.add('mini-cell');
-                                miniCell.setAttribute('data-mini-row', i);
-                                miniCell.setAttribute('data-mini-col', j);
-                                miniCell.setAttribute('data-main-row', parent.getAttribute('data-main-row'));
-                                miniCell.setAttribute('data-main-col', parent.getAttribute('data-main-col'));
-                                miniCell.addEventListener('click', handleMove);
-                                parent.appendChild(miniCell);
-                            }
-                        }
-                    });
-                }
-            });
+                // Remove any highlights and reset all main cells
+                const mainCells = document.querySelectorAll('.main-cell');
+                mainCells.forEach(cell => {
+                    cell.classList.remove('next-move', 'winner', 'x', 'o');
+                    const mainRow = cell.dataset.mainRow;
+                    const mainCol = cell.dataset.mainCol;
+                    updateMiniGameWinner(mainRow, mainCol, null);  // Reset to original mini-game layout
+                });
+            }
+        });
     });
+    
 
 
     function updateMiniGameWinner(mainRow, mainCol, winner) {
         const mainCell = document.querySelector(`.main-cell[data-main-row="${mainRow}"][data-main-col="${mainCol}"]`);
-        const winnerTile = document.createElement('div');
-        winnerTile.classList.add('winner-tile', winner.toLowerCase());
-        winnerTile.textContent = winner;
-        mainCell.innerHTML = ""; // Clear the mini-game
-        mainCell.appendChild(winnerTile);
+    
+        if (winner) {
+            // Remove all mini-cells from the main-cell if there's a winner
+            while (mainCell.firstChild) {
+                mainCell.removeChild(mainCell.firstChild);
+            }
+    
+            // Add a big tile with the winner's symbol
+            const winnerTile = document.createElement('div');
+            winnerTile.classList.add('winner-tile', winner.toLowerCase());
+            winnerTile.textContent = winner;
+            mainCell.appendChild(winnerTile);
+        } else {
+            // If no winner, recreate the mini-cells for the mini-game
+            mainCell.innerHTML = "";
+            for (let i = 0; i < 3; i++) {
+                const miniRow = document.createElement('div');
+                miniRow.classList.add('mini-row');
+                for (let j = 0; j < 3; j++) {
+                    const miniCell = document.createElement('button');
+                    miniCell.classList.add('mini-cell');
+                    miniCell.dataset.mainRow = mainRow;
+                    miniCell.dataset.mainCol = mainCol;
+                    miniCell.dataset.miniRow = i;
+                    miniCell.dataset.miniCol = j;
+                    miniCell.addEventListener('click', handleMove);
+                    miniRow.appendChild(miniCell);
+                }
+                mainCell.appendChild(miniRow);
+            }
+        }
     }
+    
 
 
     function handleMove(event) {
+        if (gameOver) return;
         const cell = event.target;
         const mainCell = cell.closest('.main-cell');
 
         const isInitialMove = document.querySelectorAll('.main-cell.next-move').length === 0;
+
+        // Check if the cell is already occupied
+        if (cell.textContent) {
+            return;  // Exit the function without processing the move
+        }
     
         // Check if the clicked cell is within the highlighted (valid) mini-game
         if (!isInitialMove && !mainCell.classList.contains('next-move')) {
@@ -87,6 +108,8 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(response => response.json())
             .then(data => {
+                gameOver = data.gameOver;  // Update the gameOver state based on the server response
+
                 if (data.error) {
                     alert(data.error);
                 } else {
@@ -111,22 +134,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
     
-
-    function updateMiniGameWinner(mainRow, mainCol, winner) {
-        const mainCell = document.querySelector(`.main-cell[data-main-row="${mainRow}"][data-main-col="${mainCol}"]`);
-
-        // Remove all mini-cells from the main-cell
-        while (mainCell.firstChild) {
-            mainCell.removeChild(mainCell.firstChild);
-        }
-
-        // Add a big tile with the winner's symbol
-        const winnerTile = document.createElement('div');
-        winnerTile.classList.add('winner-tile', winner.toLowerCase());
-        winnerTile.textContent = winner;
-        mainCell.appendChild(winnerTile); // Remove the highlight
-    }
-
 
     function highlightNextMove(nextMove) {
         // Remove the previous highlights
